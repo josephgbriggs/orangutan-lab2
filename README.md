@@ -7,6 +7,7 @@ Introduction
 ------------
 The purpose of this lab is to introduce you to embedded programming and some common hardware systems. The program you will produce will take in user input and blink LEDs at a user-specified frequency using interrupts and timers. You will be provided with the entire framework of the system, some subroutines, and some code fragments to get you started. Consider each blinking LED to be a different task that needs to be scheduled. Notice how each task is scheduled in a different way. The experiments that you will run once your code is functional will demonstrate the advantages and disadvantages of these various "scheduling" methods. 
  
+Note: This assignment has been updated to swap the 8-bit and 16-bit timers. ("You cannot set an 8-bit timer to interrupt at 100ms, thus you will need to switch the timers for 1ms and 100ms.")
 
 The Program
 -----------
@@ -14,9 +15,9 @@ You will write a program to blink the three separate LEDs at various user-define
 
 1. Using WCET static or dynamic analysis, determine the number of iterations required in a for-loop to occupy the CPU for 10ms. Use this loop to blink the red LED at 1HZ (i.e. a period of 1000ms).
 
-2. Create a software timer (16-bit) with 1ms resolution, then blink the red LED inside a cyclic executive at a user-specified rate using your software timer. Essentially, the ISR is releasing the red LED task.
+2. Create a software timer <del>(16-bit)</del> (8-bit) with 1ms resolution, then blink the red LED inside a cyclic executive at a user-specified rate using your software timer. Essentially, the ISR is releasing the red LED task.
 
-3. Create another software timer (8-bit) with 100ms resolution (10Hz), and blink the yellow LED inside the ISR for the timer interrupt. In this case, the system is being polled at a specific frequency to determine the readiness of a task.
+3. Create another software timer <del>(8-bit)</del> (16-bit) with 100ms resolution (10Hz), and blink the yellow LED inside the ISR for the timer interrupt. In this case, the system is being polled at a specific frequency to determine the readiness of a task.
 
 4. Create a Compare Match Interrupt with a frequency equal to the user-specified frequency for blinking the green LED (use timer1). Generate a PWM pulse on OC1A (aka Port D, pin 5) to toggle green.
 
