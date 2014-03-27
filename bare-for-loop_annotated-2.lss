@@ -1,0 +1,32 @@
+
+bare-for-loop.o:     file format elf32-avr
+
+
+Disassembly of section .text:
+
+00000000 <main>:
+int main() {
+   0:	a2 e0       	ldi	r26, 0x02	; 2					// 1 Set X-register low byte to 2
+   2:	b0 e0       	ldi	r27, 0x00	; 0					// 1 Set X-register high byte to 0
+   4:	e0 e0       	ldi	r30, 0x00	; 0					// 1 Set Z-register low byte to 0
+   6:	f0 e0       	ldi	r31, 0x00	; 0					// 1 Set Z-register high byte to 0
+   8:	0c 94 00 00 	jmp	0	; 0x0 <main>				// 3 Direct jump to zero
+	volatile int i;
+	while (1) {
+		for (i=0; i < 100; i++) {
+   c:	1a 82       	std	Y+2, r1		; 0x02				// 2 Store r1 in data space Y+2 (0x00 + 0x02 = 0x02)
+   e:	19 82       	std	Y+1, r1		; 0x01				// 2 Store r1 in data space Y+1 (0x00 + 0x01 = 0x01)
+  10:	00 c0       	rjmp	.+0     ; 0x12 <main+0x12>	// 2 Unconditional jump to PC+1+0
+  12:	89 81       	ldd	r24, Y+1	; 0x01				// 2 Load r24 with data space Y+1 (0x01)
+  14:	9a 81       	ldd	r25, Y+2	; 0x02				// 2 Load r25 with data space Y+2 (0x02)
+  16:	01 96       	adiw	r24, 0x01	; 1				// 2 Add 1 to r24
+  18:	9a 83       	std	Y+2, r25	; 0x02				// 2 Store r25 in data space 0x02
+  1a:	89 83       	std	Y+1, r24	; 0x01				// 2 Store r24 in data space 0x01
+  1c:	89 81       	ldd	r24, Y+1	; 0x01				// 2 Load r25 with data space 0x01
+  1e:	9a 81       	ldd	r25, Y+2	; 0x02				// 2 Load r24 with data space 0x02
+  20:	84 36       	cpi	r24, 0x64	; 100				// 1 Compare contents of r24 with 100 - setting flags
+  22:	91 05       	cpc	r25, r1							// 1 Compare (with carry) r25 and r1
+  24:	04 f0       	brlt	.+0     ; 0x26 <main+0x26>	// branch if less than (signed)
+		}
+	}
+  26:	00 c0       	rjmp	.+0     ; 0x28 <__zero_reg__+0x27> // 2 unconditional jump 
