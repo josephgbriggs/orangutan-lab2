@@ -21,23 +21,24 @@
 
 */
 
-/*
+
 // define the output ports by which you send signals to the LEDs
-#define PORT_RED     
-#define PORT_YELLOW  
-#define PORT_GREEN   
+#define PORT_RED     PORTA
+#define PORT_YELLOW  PORTA
+#define PORT_GREEN   PORTD
 
 // define the bit-masks for each port that the LEDs are attached to
-#define BIT_RED      ( 1 << )
-#define BIT_YELLOW   ( 1 << )
-#define BIT_GREEN    ( 1 << )
+#define BIT_RED      ( 1 << 2)
+#define BIT_YELLOW   ( 1 << 0)
+#define BIT_GREEN    ( 1 << 5)
+
+#define INIT_LEDS()	 DDRA |= BIT_RED; DDRA |= BIT_YELLOW; DDRD |= BIT_GREEN;
 
 // define "function" calls for turning LEDs on and off
 #define LED_ON(x)     (PORT_##x |= BIT_##x)
 #define LED_OFF(x)    (PORT_##x &= ~(BIT_##x))
 #define LED_TOGGLE(x) (PORT_##x ^= BIT_##x)
 
- */
 
 #endif
 

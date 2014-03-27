@@ -4,7 +4,7 @@ AVRDUDE_DEVICE = m1284p
 PORT ?= usb # use an external AVR programmer
 #PORT ?=/dev/tty.usbmodem00055903 # use internal prgmr on my board via a Mac
 
-CFLAGS=-g -Wall -mcall-prologues -mmcu=$(MCU) $(DEVICE_SPECIFIC_CFLAGS) -Os
+CFLAGS=-g -Wall -mcall-prologues -std=c99 -mmcu=$(MCU) $(DEVICE_SPECIFIC_CFLAGS) -Os
 CC=avr-gcc
 OBJ2HEX=avr-objcopy 
 LDFLAGS=-Wl,-gc-sections -lpololu_$(DEVICE) -Wl,-relax
@@ -21,7 +21,12 @@ clean:
 %.hex: %.obj
 	$(OBJ2HEX) -R .eeprom -O ihex $< $@
 
-lab2.o: lab2.c
+$(TARGET).o: $(TARGET).c
+
+dis: $(TARGET).o
+	avr-objdump -d -S --target=ihex $(TARGET).o > $(TARGET).lsa
+	avr-objdump -S --target=ihex $(TARGET).o > $(TARGET).lss
+	
 
 %.obj: $(OBJECT_FILES)
 	$(CC) $(CFLAGS) $(OBJECT_FILES) $(LDFLAGS) -o $@

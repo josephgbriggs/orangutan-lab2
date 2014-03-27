@@ -8,6 +8,9 @@
 
 #include <pololu/orangutan.h>  
 
+// extern GLOBALS
+extern volatile uint32_t G_redToggles;
+
 #define MENU "\rMenu: {TPZ} {RGYA} <int>: "
 #define MENU_LENGTH 27
 

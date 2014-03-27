@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-// extern GLOBALS
-
 
 // local global data structures
 char receive_buffer[32];
