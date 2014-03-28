@@ -110,11 +110,14 @@ int main(void) {
 	init_menu();
 
 	// Initialize All Tasks
+	
+	
 	//enable interrupts
 	sei();
 	
 	while (1) {
 		/* BEGIN with a simple toggle using for-loops. No interrupt timers */
+		/*
 		// --------- blink LED by using a busy-wait delay implemented with an empty for-loop
 		LED_TOGGLE(RED);
 		G_redToggles++;
@@ -130,8 +133,7 @@ int main(void) {
 		for (int i=0;i<100;i++) {
 			WAIT_10MS;
 		}
-
-
+		*/
 
 		// ----------- COMMENT OUT above implementation of toggle and replace with this...
 		// ------------------- Have scheduler release tasks using user-specified period
