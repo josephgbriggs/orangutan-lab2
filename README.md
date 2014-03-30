@@ -47,7 +47,7 @@ Examples:
 
 	Zr      : zero the toggle counter for the red LED 
 
-Experiments and Report (to hand in)
+Experiments and [Report (to hand in)](REPORT.md "Report")
 -----------------------------------
 Run a series of experiments as described below and answer the following questions. For each experiment:
 
@@ -55,7 +55,7 @@ Run a series of experiments as described below and answer the following question
 * Toggle the LEDs for approximately 1 minute.
 * Record the number of toggles for all LEDs (>pa).
 
-Experiments:
+[Experiments](REPORT.md "Report"):
 
 1. Use your original version of toggling the red LED that uses for-loops. Toggle all 3 at 1Hz. (Do not type in any menu options while you are toggling until the 1 minute is up). How good was your WCET analysis of the for loop? If it is very far off, adjust it. Why did I not want you to use the menu while running the experiment?
 
