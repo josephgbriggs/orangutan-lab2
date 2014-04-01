@@ -1,4 +1,4 @@
-#define ECHO2LCD
+//#define ECHO2LCD
 
 #include <pololu/orangutan.h>
 
@@ -60,20 +60,31 @@ volatile uint32_t G_msTicks = 0;
 // shared variables with ISRs, including 
 // release flags, task period, toggle counts
 volatile uint32_t G_redToggles = 0;
+volatile uint32_t G_yellowToggles = 0;
+volatile uint32_t G_greenToggles = 0;
+
+volatile uint16_t G_redPeriod = 1000;
+volatile uint16_t G_yellowPeriod = 1000;
+volatile uint16_t G_greenPeriod = 1000;
+
+volatile uint8_t G_redTaskRelease;
+volatile uint8_t G_menuTaskRelease;
+
+volatile uint16_t G_yellowBuffer = 0;
 
 void configuration_check() {
 	// Turn all LEDs on for a second or two then turn off to confirm working properly
 	INIT_LEDS();
 	
-	// Send a message to LCD to confirm proper start. ( interrupts might need to be on for this ?? )
+	// Send a message to LCD to confirm proper start
 	print("LED blink test...");
 	
 	LED_ON(GREEN);
-	delay_ms(500);
+	delay_ms(200);
 	LED_ON(YELLOW);
-	delay_ms(500);
+	delay_ms(200);
 	LED_ON(RED);
-	delay_ms(500);
+	delay_ms(200);
 	
 	for (int i=0; i<10; i++) {
 		LED_TOGGLE(GREEN);
@@ -88,13 +99,12 @@ void configuration_check() {
 	
 	lcd_goto_xy(0, 1);	// go to start of second LCD row
 	print("...done");
-	
-	// Send a message through serial comm to confirm working properly.
+	delay_ms(200);
 	clear();	// clear the LCD
-	print("Serial connection test...");
+	
+	// Send a message through serial comm to confirm working properly
+	print("Please make a serial connection...");
 	print_usb("Welcome to lab2!\r\n", 18);
-	lcd_goto_xy(0, 1);
-	print("...done");
 	clear();	// clear the LCD
 	
 }
@@ -107,46 +117,60 @@ int main(void) {
 	
 	configuration_check();
 	
-	init_menu();
-
 	// Initialize All Tasks
-	
+	initialize_scheduler();
+	initialize_green_task();
+	initialize_yellow_task();
+	init_menu();
 	
 	//enable interrupts
 	sei();
 	
 	while (1) {
-		/* BEGIN with a simple toggle using for-loops. No interrupt timers */
-		/*
-		// --------- blink LED by using a busy-wait delay implemented with an empty for-loop
-		LED_TOGGLE(RED);
-		G_redToggles++;
-		length = sprintf( tempBuffer, "R toggles %d\r\n", G_redToggles );
-		print_usb( tempBuffer, length );
+		
 
-#ifdef ECHO2LCD
-		lcd_goto_xy(0,0);
-		printf("R:%d ",G_redToggles);
-#endif
-		// see note in tasks.h for calculation
-		// create a for-loop to kill approximately 1 second
-		for (int i=0;i<100;i++) {
-			WAIT_10MS;
-		}
-		*/
-
-		// ----------- COMMENT OUT above implementation of toggle and replace with this...
 		// ------------------- Have scheduler release tasks using user-specified period
 
-
-
 		// --------------- RED task
+		if (G_redTaskRelease) {
+			G_redTaskRelease = 0;
+			LED_TOGGLE(RED);
+			// count only the times we turn the light on
+			if (PORTA & BIT_RED) {
+				G_redToggles++;
+			}
+		}
 		
 		// --------------- MENU task
-
-		serial_check();
-		check_for_new_bytes_received();
+		if (G_menuTaskRelease) {
+			G_menuTaskRelease = 0;
+			serial_check();
+			check_for_new_bytes_received();
+		}
 		
+		/*
+		if (G_msTicks % 100 == 0) {
+
+			length = sprintf( tempBuffer, "Ticks %u, ", G_msTicks );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "R per %u, ", G_redPeriod );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "R tog %u; ", G_redToggles );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "Y buf %u, ", G_yellowBuffer );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "Y per %u, ", G_yellowPeriod );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "Y tog %u, ", G_yellowToggles );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "G per %u, ", G_greenPeriod );
+			print_usb( tempBuffer, length );
+			length = sprintf( tempBuffer, "G tog %u\r\n", G_greenToggles );
+			print_usb( tempBuffer, length );
+		}
+		*/
+		
+
 					
 	} //end while loop
 } //end main

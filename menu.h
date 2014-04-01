@@ -10,6 +10,8 @@
 
 // extern GLOBALS
 extern volatile uint32_t G_redToggles;
+extern volatile uint32_t G_yellowToggles;
+extern volatile uint32_t G_greenToggles;
 
 #define MENU "\rMenu: {TPZ} {RGYA} <int>: "
 #define MENU_LENGTH 27

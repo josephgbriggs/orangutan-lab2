@@ -112,12 +112,18 @@ void process_received_string(const char* buffer)
 		case 'z':
 			switch(color) {
 				case 'R': 
+					G_redToggles = 0;
 					break;
 				case 'G': 
+					G_greenToggles = 0;
 					break;
 				case 'Y': 
+					G_yellowToggles = 0;
 					break;
 				case 'A': 
+					G_redToggles = 0;
+					G_yellowToggles = 0;
+					G_greenToggles = 0;
 					break;
 				default: 
 					print_usb("Default in z(color). How did I get here?\r\n", 42 );
@@ -141,7 +147,7 @@ void check_for_new_bytes_received()
 	serial_get_received_bytes is an array index that marks where in the buffer the most current received character resides. 
 	receive_buffer_position is an array index that marks where in the buffer the most current PROCESSED character resides. 
 	Both of these are incremented % (size-of-buffer) to move through the buffer, and once the end is reached, to start back at the beginning.
-	This process and data structures are from the Pololu library. See examples/serial2/test.c and src/OrangutanSerial/*.*
+	This process and data structures are from the Pololu library. See examples/serial2/test.c and src/OrangutanSerial/ *.*
 	
 	A carriage return from your comm window initiates the transfer of your keystrokes.
 	All key strokes prior to the carriage return will be processed with a single call to this function (with multiple passes through this loop).
