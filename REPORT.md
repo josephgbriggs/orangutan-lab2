@@ -21,6 +21,8 @@ Experiments:
 
 2. Use your software timer to toggle the red LED. Toggle all 3 at 1Hz. Simply observe the final toggle count. All should be about 60 (maybe the red is off by 1). If this is not the case, you probably set something up wrong, and you should fix it.
 
+	> I was a hair early when submitting the 'pa' command, so I got counts of R:60, Y:59 and G:59.
+	> The video below shows this experiment:
 	> [![Experiment 2 Video](http://img.youtube.com/vi/xwaJ2xWF5oY/0.jpg)](http://www.youtube.com/watch?v=xwaJ2xWF5oY)
 	>
 
