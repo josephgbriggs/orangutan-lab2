@@ -96,9 +96,9 @@ void process_received_string(const char* buffer)
 					print_usb( tempBuffer, length ); 	
 					break;
 				case 'A': 
-					length = sprintf( tempBuffer, "R toggles: %u, Y togggles: %u G togggles: %u\r\n", 
+					length = sprintf( tempBuffer, "R: %u, Y: %u G: %u\r\n", 
 						(unsigned int)G_redToggles, (unsigned int)G_yellowToggles, (unsigned int)G_greenToggles);
-					print_usb( tempBuffer, length ); 
+					print_usb( tempBuffer, length );
 					break;
 				default: 
 					print_usb("Default in p(color). How did I get here?\r\n", 42 );

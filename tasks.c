@@ -235,6 +235,7 @@ void setPeriod(char task, int ms) {
 			// green has a limit on its period.
 			if ( ms > 3300) { 
 				ms = 3300; 
+				printf("Converted to period: %d.\n",ms);
 			}
 			
 			G_greenPeriod = ms;
