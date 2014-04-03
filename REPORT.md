@@ -21,7 +21,7 @@ Experiments:
 
 2. Use your software timer to toggle the red LED. Toggle all 3 at 1Hz. Simply observe the final toggle count. All should be about 60 (maybe the red is off by 1). If this is not the case, you probably set something up wrong, and you should fix it.
 
-	> 
+	> [![Experiment 2 Video](http://img.youtube.com/vi/xwaJ2xWF5oY/0.jpg)](http://www.youtube.com/watch?v=xwaJ2xWF5oY)
 	>
 
 3. Set all LEDs to toggle at 2Hz (500ms). Place a 90ms busy-wait for-loop into the ISR for the green LED. Toggle for 1 minute and record results. Now place a 90ms busy-wait for-loop into the ISR for the yellow LED. Toggle for 1 minute and record results. What did you observe? Did the busy-wait disrupt any of the LEDs? Explain your results.
