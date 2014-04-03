@@ -128,7 +128,9 @@ ISR(TIMER3_COMPA_vect) {
 	else if (G_yellowBuffer >= (G_yellowPeriod / 2)) {
 		LED_OFF(YELLOW);
 	}
-	
+	for (int i=0;i<9;i++) {
+		WAIT_10MS;
+	}
 }
 
 
@@ -196,10 +198,6 @@ void initialize_green_task(void) {
 
 ISR(TIMER1_COMPA_vect) {
 	G_greenToggles++;
-	for (int i=0;i<9;i++) {
-		WAIT_10MS;
-	}
-
 }
 
 // You don't have to use the code below, but this functionality is needed.

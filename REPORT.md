@@ -40,7 +40,17 @@ Experiments:
 	>
 	> With a 90ms busy-wait loop in the green ISR I recorded R:98, Y:120, G:119.
 	>
-	> With a 90ms busy-wait loop in the yellow ISR I recorded R: , Y: , G: .
+	> With a 90ms busy-wait loop in the yellow ISR I recorded R:13, Y:119, G:119.
+	>
+	> The green ISR task has a period of 500ms and the toggling of the LED is handled by hardware,
+	> So it will not be affected by the busy-wait delay. There seems to be some impact on the red
+	> LED since it is running in the software cyclic executive and has the lowest priority.
+	> 
+	> The yellow ISR task has a period of 100 ms. Inserting a 90ms delay still seems to not affect
+	> the yellow LED -- probably because the other instructions do not take more than 10ms. However,
+	> there is a large impact on the red LED. The green ISR has a period of 500ms, so an additional
+	> 90ms of utilization is taken up every 500ms. But the yellow ISR has a period of 100ms, so 
+	> there is 450ms of utilization consumed every 500ms. This has a much larger impact on red.
 
 4. Repeat #3, except use a 110ms busy-wait. You probably won’t be able to use the menu functions. If not, report that, and discuss what you observed from the blinking. Explain your results.
 
