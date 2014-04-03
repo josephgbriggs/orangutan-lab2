@@ -23,6 +23,7 @@ Experiments:
 
 	> I was a hair early when submitting the 'pa' command, so I got counts of R:60, Y:59 and G:59.
 	> The video below shows this experiment:
+	>
 	> [![Experiment 2 Video](http://img.youtube.com/vi/xwaJ2xWF5oY/0.jpg)](http://www.youtube.com/watch?v=xwaJ2xWF5oY)
 	>
 
