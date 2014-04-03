@@ -54,18 +54,44 @@ Experiments:
 
 4. Repeat #3, except use a 110ms busy-wait. You probably won’t be able to use the menu functions. If not, report that, and discuss what you observed from the blinking. Explain your results.
 
+	> With a 110ms busy-wait loop in the green ISR I recorded R:94, Y:117, G:119.
 	>
+	> With a 110ms busy-wait loop in the yellow ISR I could not record the counts because the 
+	> menu was unresponsive, but the green LED was blinking faster than the yellow LED and the
+	> red LED blinked once.
 	>
-	>
-	>
-	
+	> Since the yellow period is only 100ms, a 110ms delay starves the red LED task. I assume
+	> that the yellow LED blnked slower than 2 Hz and the green LED was unaffected and continued
+	> to blink at 2 Hz because it was using a hardware PWM to blink the LED.
 
 5. Repeat #3, except use a 510ms busy-wait. Explain your results.
 
+	> With a 510ms busy-wait loop in the green ISR the menu was unresponsive. The green LED
+	> appeared to toggle at 2 Hz. The yellow and red LEDs turned on, but never toggled off.
 	>
+	> With a 510ms busy-wait loop in the yellow ISR the menu was unreponsive. The green LED
+	> appeared to toggle at 2 Hz. The yellow LED appeared to toggle at a rate slightly 
+	> slower than 1 Hz. The red LED never lit.
 	>
+	> These results are expected because the toggling of the green LED is generated in
+	> the timer hardware and is unaffected by the delay in the yellow ISR. The yellow ISR
+	> is affected because the shortest period it can have is 1020ms (two ISR firings, one
+	> to turn the LED on and one to turn it off). The red LED was completely starved and did
+	> not light within the first minute.
 
 6. Repeat #5 (i.e. 2Hz toggle with 510ms busy-wait), except place an sei() at the top of the ISR with the for-loop in it. Explain your results.
 
+	> With a 510ms busy-wait loop in the green ISR and 'nested' interrupts, the green LED
+	> appeared to blink at 2 Hz, with the yellow LED blinking slightly slower. The red LED
+	> lit once and never turned off during the minute timing. The menu was unresponsive.
 	>
+	> With a 510ms busy-wait loop in the yellow ISR and 'nested' interrupts, the results
+	> appeared to be exactly as above.
 	>
+	> Allowing interrupts within the green ISR allowed the yellow ISR to fire with its
+	> shorter period, unlike experiment 5. The red LED continued to be starved since it 
+	> could not preempt an ISR since it was running in the cyclic executive.
+	>
+	> Allowing interrupts in the yellow ISR did not materially affect the green LED that 
+	> was relying on hardware. It did allow the yellow ISR to interrupt itself and 
+	> appeared to almost acheive a 2 Hz rate unlike experiment 5.
