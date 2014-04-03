@@ -27,6 +27,10 @@ volatile uint32_t __ii;
 
 #define WAIT_10MS { for ( __ii=0; __ii < FOR_COUNT_10MS; __ii++ ); }
 
+/**
+ * Set the period for a given task. Tasks may be {A,R,G,Y}.
+ */
+void setPeriod(char task, int ms);
 
 #endif
 

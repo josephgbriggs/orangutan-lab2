@@ -66,9 +66,14 @@ ISR(TIMER2_COMPA_vect) {
 	G_msTicks++;
 
 	// fire the release at half the period since we are toggling
-	if ( G_msTicks % (G_redPeriod / 2)  == 0 ) {
+	if (G_redPeriod == 0) {
+		// ignore
+		G_redTaskRelease = 0;
+	}
+	else if ( G_msTicks % (G_redPeriod / 2)  == 0 ) {
 		G_redTaskRelease = 1;
 	}
+	
 	// always release menu task
 	G_menuTaskRelease = 1;
 }
@@ -104,6 +109,9 @@ void initialize_yellow_task(void) {
 	TCCR3B |= (1 << WGM32);
 
 	OCR3A = 1953; // 100 ms TOP
+	
+	// set clock off initially
+	TCCR3B &= ~YELLOW_CLK_BITS;
 	
 	// turn on the interrupt
 	TIMSK3 |= 1 << OCIE3A;
@@ -177,11 +185,14 @@ void initialize_green_task(void) {
 	// set the data direction register for PortD Pin5 where we are putting our
 	// green LED
 	DDRD |= 1 << DDD5;
-	
-	// turn the interrupt on
+
+	// set the clock off initially
+	TCCR1B &= ~GREEN_CLK_BITS;
+
 	// turn on the interrupt
 	TIMSK1 |= 1 << OCIE1A;
 }
+
 
 ISR(TIMER1_COMPA_vect) {
 	G_greenToggles++;
@@ -199,12 +210,8 @@ void setPeriod(char task, int ms) {
 	// For each task, if ms is 0, turn it off, else turn it on and set appropriately
 	
 	if ( ( task == 'R' ) || ( task == 'A' ) ) {
-		if ( ms == 0 ) {
-			// turn R off
-		}
-		else {
-			G_redPeriod = ms;
-		}
+		
+		G_redPeriod = ms;
 	}
 	
 	if ( ( task == 'Y') || ( task =='A')) {
@@ -226,9 +233,18 @@ void setPeriod(char task, int ms) {
 		else {
 			TCCR1B |= GREEN_CLK_BITS;
 			// green has a limit on its period.
-			if ( ms > 3300) { ms = 3300; }
+			if ( ms > 3300) { 
+				ms = 3300; 
+			}
 			
 			G_greenPeriod = ms;
+			
+			// set ICR for TOP value for wave
+			uint16_t waveTop = G_greenPeriod * GREEN_PERIOD_SCALER;
+			ICR1 = waveTop;
+
+			// 50% duty cycle for the light
+			OCR1A = waveTop / 2;
 		}
 	}
 	// set requested frequency.

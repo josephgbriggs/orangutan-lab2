@@ -1,4 +1,4 @@
-//#define ECHO2LCD
+#define ECHO2LCD
 
 #include <pololu/orangutan.h>
 
@@ -63,9 +63,9 @@ volatile uint32_t G_redToggles = 0;
 volatile uint32_t G_yellowToggles = 0;
 volatile uint32_t G_greenToggles = 0;
 
-volatile uint16_t G_redPeriod = 1000;
-volatile uint16_t G_yellowPeriod = 1000;
-volatile uint16_t G_greenPeriod = 1000;
+volatile uint16_t G_redPeriod = 0;
+volatile uint16_t G_yellowPeriod = 0;
+volatile uint16_t G_greenPeriod = 0;
 
 volatile uint8_t G_redTaskRelease;
 volatile uint8_t G_menuTaskRelease;
@@ -103,17 +103,14 @@ void configuration_check() {
 	clear();	// clear the LCD
 	
 	// Send a message through serial comm to confirm working properly
-	print("Please make a serial connection...");
-	print_usb("Welcome to lab2!\r\n", 18);
+	print("Waiting for");
+	lcd_goto_xy(0, 1);
+	print(" serial conn...");
+	print_usb("Welcome to lab2!\r\n", 18);	// this will block if no serial
 	clear();	// clear the LCD
-	
 }
 
 int main(void) {
-
-	// Used to print to serial comm window
-	char tempBuffer[32];
-	int length = 0;
 	
 	configuration_check();
 	
@@ -128,9 +125,7 @@ int main(void) {
 	
 	while (1) {
 		
-
-		// ------------------- Have scheduler release tasks using user-specified period
-
+		// ---- Have scheduler release tasks using user-specified period
 		// --------------- RED task
 		if (G_redTaskRelease) {
 			G_redTaskRelease = 0;
@@ -146,9 +141,13 @@ int main(void) {
 			G_menuTaskRelease = 0;
 			serial_check();
 			check_for_new_bytes_received();
+			
 		}
 		
 		/*
+		// Used to print to serial comm window
+		char tempBuffer[32];
+		int length = 0;
 		if (G_msTicks % 100 == 0) {
 
 			length = sprintf( tempBuffer, "Ticks %u, ", G_msTicks );
@@ -169,9 +168,7 @@ int main(void) {
 			print_usb( tempBuffer, length );
 		}
 		*/
-		
-
-					
+				
 	} //end while loop
 } //end main
 

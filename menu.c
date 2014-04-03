@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "led.h"
+#include "tasks.h"
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -23,8 +24,6 @@ void print_usb( char *buffer, int n ) {
 // This immediately readies the board for serial comm
 void init_menu() {
 	
-	char printBuffer[32];
-	
 	// Set the baud rate to 9600 bits per second.  Each byte takes ten bit
 	// times, so you can get at most 960 bytes per second at this speed.
 	serial_set_baud_rate(USB_COMM, 9600);
@@ -32,12 +31,7 @@ void init_menu() {
 	// Start receiving bytes in the ring buffer.
 	serial_receive_ring(USB_COMM, receive_buffer, sizeof(receive_buffer));
 
-	//memcpy_P( send_buffer, PSTR("USB Serial Initialized\r\n"), 24 );
-	//snprintf( printBuffer, 24, "USB Serial Initialized\r\n");
-	//print_usb( printBuffer, 24 );
 	print_usb( "USB Serial Initialized\r\n", 24);
-
-	//memcpy_P( send_buffer, MENU, MENU_LENGTH );
 	print_usb( MENU, MENU_LENGTH );
 }
 
@@ -61,7 +55,7 @@ void process_received_string(const char* buffer)
 	lcd_goto_xy(0,0);
 	printf("Got %c %c %d\n", op_char, color, value);
 #endif
-	length = sprintf( tempBuffer, "Op:%c C:%c V:%d\r\n", op_char, color, value );
+	length = sprintf( tempBuffer, "\r\nOp:%c C:%c V:%d\r\n", op_char, color, value );
 	print_usb( tempBuffer, length );
 	
 	// convert color to upper and check if valid
@@ -82,7 +76,7 @@ void process_received_string(const char* buffer)
 		// change toggle period <color> LED
 		case 'T':
 		case 't':
-			// setPeriod( color, value );
+			setPeriod( color, value );
 			break; 
 			
 		// print counter for <color> LED 
@@ -90,17 +84,21 @@ void process_received_string(const char* buffer)
 		case 'p':
 			switch(color) {
 				case 'R': 
-					length = sprintf( tempBuffer, "R toggles: %d\r\n", G_redToggles );
+					length = sprintf( tempBuffer, "R toggles: %u\r\n", (unsigned int)G_redToggles );
 					print_usb( tempBuffer, length ); 
 					break;
 				case 'G': 
- 
+					length = sprintf( tempBuffer, "G toggles: %u\r\n", (unsigned int)G_greenToggles );
+					print_usb( tempBuffer, length ); 
 					break;
 				case 'Y': 
-
+					length = sprintf( tempBuffer, "Y toggles: %u\r\n", (unsigned int)G_yellowToggles );
+					print_usb( tempBuffer, length ); 	
 					break;
 				case 'A': 
-
+					length = sprintf( tempBuffer, "R toggles: %u, Y togggles: %u G togggles: %u\r\n", 
+						(unsigned int)G_redToggles, (unsigned int)G_yellowToggles, (unsigned int)G_greenToggles);
+					print_usb( tempBuffer, length ); 
 					break;
 				default: 
 					print_usb("Default in p(color). How did I get here?\r\n", 42 );
@@ -164,6 +162,16 @@ void check_for_new_bytes_received()
 	{
 		// place in a buffer for processing
 		menuBuffer[received] = receive_buffer[receive_buffer_position];
+		
+		// echo back each byte sent by the user
+		if (menuBuffer[received] == '\r' || menuBuffer[received] == '\n') {
+			// don't echo back newlines
+		}
+		else {
+			send_buffer[0] = menuBuffer[received];
+			print_usb(send_buffer, 1);
+		}
+		
 		++received;
 		
 		// Increment receive_buffer_position, but wrap around when it gets to
@@ -177,28 +185,52 @@ void check_for_new_bytes_received()
 			receive_buffer_position++;
 		}
 	}
-	// If there were keystrokes processed, check if a menue command
+	// If there were keystrokes processed, check if a menu command
 	if (received) {
-		// if only 1 received, it was MOST LIKELY a carriage return. 
-		// Even if it was a single keystroke, it is not a menu command, so ignore it.
-		if ( 1 == received ) {
-			received = 0;
-			return;
-		}
-		// Process buffer: terminate string, process, reset index to beginning of array to receive another command
-		menuBuffer[received] = '\0';
+		
+		char* loc;
+		int idx;
+		uint8_t commandComplete = 0;
+
+		// null terminate the string in the menuBuffer if newline found
+        if ((loc = strchr(menuBuffer, '\r')) != NULL) {
+
+			// address difference to find our array index
+			idx = loc - menuBuffer;
+            menuBuffer[idx] = '\0';
+			if (idx < 32) {
+				++idx;
+				menuBuffer[idx] = '\0'; // assume '\r' is followed by '\n'
+			} 
+			commandComplete = 1;
+			
+        }
+		else if ((loc = strchr(menuBuffer, '\n')) != NULL) {
+
+			// address difference to find our array index
+			idx = loc - menuBuffer;
+            menuBuffer[idx] = '\0';
+			commandComplete = 1;
+        }
+		
+		// the user pressed 'return' so process the command
+		if (commandComplete) {
+			commandComplete = 0;
+
+			process_received_string(menuBuffer);
+			
 #ifdef ECHO2LCD
-		lcd_goto_xy(0,1);			
-		print("RX: (");
-		print_long(received);
-		print_character(')');
-		for (int i=0; i<received; i++)
-		{
-			print_character(menuBuffer[i]);
-		}
+			lcd_goto_xy(0,1);
+			print("RX: (");
+			print_long(received);
+			print_character(')');
+			for (int i=0; i<received; i++)
+			{
+				print_character(menuBuffer[i]);
+			}
 #endif
-		process_received_string(menuBuffer);
-		received = 0;
+			received = 0;
+		}
 	}
 }
 	
